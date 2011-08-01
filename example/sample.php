@@ -18,12 +18,12 @@ class SampleConsumer extends Phirehose
      *       enqueued and processed asyncronously from the collection process. 
      */
     $data = json_decode($status, true);
-    if (is_array($data) && isset($data['user']['screen_name'])) {
-      print $data['user']['screen_name'] . ': ' . urldecode($data['text']) . "\n";
+    if (is_array($data) && isset($data['user']['newshorts'])) {
+      print $data['user']['newshorts'] . ': ' . urldecode($data['text']) . "\n";
     }
   }
 }
 
 // Start streaming
-$sc = new SampleConsumer('username', 'password', Phirehose::METHOD_SAMPLE);
+$sc = new SampleConsumer('newshorts', 'kGD_00bouer', Phirehose::METHOD_SAMPLE);
 $sc->consume();
