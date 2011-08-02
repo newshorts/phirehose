@@ -16,9 +16,22 @@ require_once('../lib/Phirehose.php');
  * fouhy - 21313187
  * rjduranjr - 238438353
  * 
+ * INSTRUCTIONS:
+ * 
+ * Enqueue is only for spitting data, each tweet gets written to a new file.
+ * When a user enters the site, the javascript calls another process.php file.
+ * It searches through the direcory looking for tweets in the last 5 seconds. If
+ * it can't find any it returns null, otherwise it returns the tweet text and 
+ * screen_name. If there is more than one it returns a json encoded array of 
+ * both. Then there is a cron job running every minute that cleans out the 
+ * directory for everything more than 10 seconds ago. This keeps the directory
+ * small.
+ * 
  */
 class SampleConsumer extends Phirehose
 {
+    
+    public $tweetCounter;
     
   /**
    * Enqueue each status
@@ -32,18 +45,18 @@ class SampleConsumer extends Phirehose
      * NOTE: You should NOT be processing tweets at this point in a real application, instead they should be being
      *       enqueued and processed asyncronously from the collection process. 
      */
-    $data = json_decode($status, true);
-    if (is_array($data) && isset($data['user']['newshorts'])) {
-      print $data['user']['newshorts'] . ': ' . urldecode($data['text']) . "\n";
-    }
-    echo "<pre>";
-//    echo $this->getFollow();
-    print_r($data);
+//    $data = json_decode($status, true);
+
+//    print_r($data);
+      
+      $this->tweetCounter ++;
+      $filePath = 'tweets/' . time() . '_' . $this->tweetCounter . '.tweet';
+      file_put_contents($filePath, $status);
   }
 }
 
 // Start streaming
-$sc = new SampleConsumer('newshorts', 'kGD_00bouer', Phirehose::METHOD_FILTER);
+$sc = new SampleConsumer('username', 'password', Phirehose::METHOD_FILTER);
 
 /*
  * find out here: http://www.idfromuser.com/
@@ -51,7 +64,7 @@ $sc = new SampleConsumer('newshorts', 'kGD_00bouer', Phirehose::METHOD_FILTER);
  * example 1: 302605902 nyandarguard, 284899423 Eidsin, 189069893 newshorts
  */
 
-$users = array("302605902", "284899423", "189069893");
+$users = array("189069893", "14923310", "298717298", "63525170", "191618689", "27108506", "15085420", "14859090", "148559999", "19356301", "21313187", "238438353");
 
 $sc->setFollow($users);
 
